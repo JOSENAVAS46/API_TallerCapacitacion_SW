@@ -17,25 +17,7 @@ namespace API_TallerCapacitacion_SW.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Taller>()
-                .HasMany(t => t.Participantes)
-                .WithMany(p => p.Talleres)
-                .UsingEntity<Dictionary<string, object>>(
-                    "ParticipanteTaller",
-                    j => j.HasOne<Participante>().WithMany().HasForeignKey("ParticipanteId"),
-                    j => j.HasOne<Taller>().WithMany().HasForeignKey("TallerId"),
-                    j => j.HasKey("ParticipanteId", "TallerId")
-                );
-
-            modelBuilder.Entity<Taller>()
-                .HasMany(t => t.Asistencias)
-                .WithOne(a => a.Taller)
-                .HasForeignKey(a => a.TallerId);
-
-            modelBuilder.Entity<Participante>()
-                .HasMany(p => p.Asistencias)
-                .WithOne(a => a.Participante)
-                .HasForeignKey(a => a.ParticipanteId);
+            
         }
     }
 }

@@ -16,14 +16,14 @@ namespace API_TallerCapacitacion_SW.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetParticipantes()
+        public async Task<IActionResult> ObtenerParticipantes()
         {
             var participantes = await _participanteRepository.GetParticipantesAsync();
             return Ok(participantes);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetParticipante(int id)
+        public async Task<IActionResult> ObtenerParticipanteById(int id)
         {
             var participante = await _participanteRepository.GetParticipanteByIdAsync(id);
             if (participante == null)
@@ -35,11 +35,17 @@ namespace API_TallerCapacitacion_SW.Controllers
         [HttpPost]
         public async Task<IActionResult> RegistrarParticipante([FromBody] Participante participante)
         {
-            // Implementar la lógica para validar el participante, verificar si ya existe, etc.
-            // ...
+            // Verificar si el modelo recibido es válido
+            if (!ModelState.IsValid)
+                return BadRequest("Datos del participante inválidos.");
+
+            // Verificar si el participante ya existe (por ejemplo, utilizando el email)
+            var participanteExistente = await _participanteRepository.GetParticipantesAsync();
+            if (participanteExistente.Any(p => p.Email.ToLower() == participante.Email.ToLower()))
+                return Conflict("El participante ya está registrado.");
 
             await _participanteRepository.AddParticipanteAsync(participante);
-            return CreatedAtAction(nameof(GetParticipante), new { id = participante.Id }, participante);
+            return CreatedAtAction(nameof(ObtenerParticipanteById), new { id = participante.Id }, participante);
         }
 
 

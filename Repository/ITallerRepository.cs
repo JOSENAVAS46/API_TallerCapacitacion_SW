@@ -1,5 +1,6 @@
 ﻿using API_TallerCapacitacion_SW.Context;
 using API_TallerCapacitacion_SW.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace API_TallerCapacitacion_SW.Repository
 {
@@ -8,6 +9,7 @@ namespace API_TallerCapacitacion_SW.Repository
         Task<List<Taller>> GetTalleresAsync();
         Task<Taller> GetTallerByIdAsync(int id);
         Task AddTallerAsync(Taller taller);
+        Task UpdateTallerAsync(Taller taller);
         Task<bool> SaveChangesAsync();
 
 
@@ -24,7 +26,9 @@ namespace API_TallerCapacitacion_SW.Repository
 
         public async Task<List<Taller>> GetTalleresAsync()
         {
-            List<Taller> lstTalleres = _context.Talleres.ToList();
+            List<Taller> lstTalleres = await _context.Talleres
+                .Include(t => t.Participantes) // Incluir la lista de participantes del taller
+                .ToListAsync();
             return lstTalleres;
         }
 
@@ -37,6 +41,12 @@ namespace API_TallerCapacitacion_SW.Repository
         public async Task AddTallerAsync(Taller taller)
         {
             _context.Talleres.Add(taller);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateTallerAsync(Taller taller)
+        {
+            _context.Talleres.Update(taller);
             await _context.SaveChangesAsync();
         }
 
